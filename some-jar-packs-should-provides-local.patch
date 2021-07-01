@@ -1,0 +1,27 @@
+From 3e387b07fd23960f566dee7209f0779791df4094 Mon Sep 17 00:00:00 2001
+From: si-gui <sunguoshuai@huawei.com>
+Date: Wed, 30 Jun 2021 17:16:28 +0800
+Subject: [PATCH] some jar packs should provides local
+
+---
+ java/Makefile | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/java/Makefile b/java/Makefile
+index 155db69..0c835ae 100644
+--- a/java/Makefile
++++ b/java/Makefile
+@@ -288,8 +288,8 @@ optimistic_transaction_sample: java
+ 
+ resolve_test_deps:
+ 	test -d "$(JAVA_TEST_LIBDIR)" || mkdir -p "$(JAVA_TEST_LIBDIR)"
+-	test -s "$(JAVA_JUNIT_JAR)" || cp $(MVN_LOCAL)/junit/junit/4.12/junit-4.12.jar $(JAVA_TEST_LIBDIR) || curl --fail --insecure --output $(JAVA_JUNIT_JAR) --location $(DEPS_URL)/junit-4.12.jar
+-	test -s "$(JAVA_HAMCR_JAR)" || cp $(MVN_LOCAL)/org/hamcrest/hamcrest-core/1.3/hamcrest-core-1.3.jar $(JAVA_TEST_LIBDIR) || curl --fail --insecure --output $(JAVA_HAMCR_JAR) --location $(DEPS_URL)/hamcrest-core-1.3.jar
++	test -s "$(JAVA_JUNIT_JAR)" || cp /usr/share/java/junit.jar $(JAVA_TEST_LIBDIR)/junit-4.12.jar || curl --fail --insecure --output $(JAVA_JUNIT_JAR) --location $(DEPS_URL)/junit-4.12.jar
++	test -s "$(JAVA_HAMCR_JAR)" || cp /usr/share/java/hamcrest/core.jar $(JAVA_TEST_LIBDIR)/hamcrest-core-1.3.jar || curl --fail --insecure --output $(JAVA_HAMCR_JAR) --location $(DEPS_URL)/hamcrest-core-1.3.jar
+ 	test -s "$(JAVA_MOCKITO_JAR)" || cp $(MVN_LOCAL)/org/mockito/mockito-all/1.10.19/mockito-all-1.10.19.jar $(JAVA_TEST_LIBDIR) || curl --fail --insecure --output "$(JAVA_MOCKITO_JAR)" --location $(DEPS_URL)/mockito-all-1.10.19.jar
+ 	test -s "$(JAVA_CGLIB_JAR)" || cp $(MVN_LOCAL)/cglib/cglib/2.2.2/cglib-2.2.2.jar $(JAVA_TEST_LIBDIR) || curl --fail --insecure --output "$(JAVA_CGLIB_JAR)" --location $(DEPS_URL)/cglib-2.2.2.jar
+ 	test -s "$(JAVA_ASSERTJ_JAR)" || cp $(MVN_LOCAL)/org/assertj/assertj-core/1.7.1/assertj-core-1.7.1.jar $(JAVA_TEST_LIBDIR) || curl --fail --insecure --output "$(JAVA_ASSERTJ_JAR)" --location $(DEPS_URL)/assertj-core-1.7.1.jar
+-- 
+2.30.0
+

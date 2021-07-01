@@ -1,6 +1,6 @@
 Name:          rocksdb
 Version:       6.8.1
-Release:       2
+Release:       3
 Summary:       A Persistent Key-Value Store for Flash and RAM Storage
  
 License:       GPLv2 and Apache 2.0 License
@@ -17,7 +17,11 @@ BuildRequires: snappy snappy-devel zlib zlib-devel bzip2 bzip2-devel lz4 lz4-dev
 Requires:      snappy snappy-devel zlib zlib-devel bzip2 bzip2-devel lz4 lz4-devel zstd zstd-devel gflags gflags-devel
  
 Source0:       https://codeload.github.com/facebook/%{name}/tar.gz/v%{version}
+Source1:       https://repo1.maven.org/maven2/org/assertj/assertj-core/1.7.1/assertj-core-1.7.1.jar
+Source2:       https://repo1.maven.org/maven2/cglib/cglib/2.2.2/cglib-2.2.2.jar
+Source3:       https://repo1.maven.org/maven2/org/mockito/mockito-all/1.10.19/mockito-all-1.10.19.jar
 Patch0:        rocksdb-6.8.1-install_path.patch
+Patch1:        some-jar-packs-should-provides-local.patch
  
 %description
 Rocksdb is a library that forms the core building block for a fast key value
@@ -44,11 +48,13 @@ RocksDB JNI gives you a Java interface to the RocksDB C++ library which is an
 embeddable persistent key-value store for fast storage.
 
 %prep
-%autosetup
+%autosetup -p1
 
 rm -rf third-party/gtest-1.8.1
 rm java/benchmark/src/main/java/org/rocksdb/benchmark/DbBenchmark.java
 rm build_tools/gnu_parallel
+mkdir -p java/test-libs
+cp -p %{SOURCE1} %{SOURCE2} %{SOURCE3} java/test-libs
  
 %build
 export CFLAGS="%{optflags}"
@@ -92,6 +98,9 @@ install -D -m 0644 java/target/%{name}jni-%{version}-linux$(getconf LONG_BIT).ja
 %{_javadir}/%{name}jni/%{name}jni.jar
 
 %changelog
+* Thu 01 Jul 2021 sunguoshuai <sunguoshuai@huawei.com> - 6.8.1-3
+- Some jar packs should provides local in case of build error
+
 * Thu May 06 2021 herengui <herengui@uniontech.com> - 6.8.1-2
 - add java-api: rocksdbjni
 - fix undefined symbol issue for c++ API
