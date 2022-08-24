@@ -1,6 +1,6 @@
 Name:          rocksdb
 Version:       6.8.1
-Release:       3
+Release:       4
 Summary:       A Persistent Key-Value Store for Flash and RAM Storage
  
 License:       GPLv2 and Apache 2.0 License
@@ -65,6 +65,7 @@ export EXTRA_CXXFLAGS=" -std=c++11 %{optflags} -ldl"
 export JAVA_HOME=%{_jvmdir}/java-1.8.0-openjdk
 export EXTRA_CXXFLAGS="${EXTRA_CXXFLAGS} -I${JAVA_HOME}/include/ -I${JAVA_HOME}/include/linux"
 sed -i 's#\(^DEBUG_LEVEL.*=\).*$#\10#' Makefile
+sed -i '2057 a\	$(AM_V_at)cd java/target;strip $(ROCKSDBJNILIB)'  Makefile
 PORTABLE=1 %make_build rocksdbjava
  
 %install
@@ -98,6 +99,9 @@ install -D -m 0644 java/target/%{name}jni-%{version}-linux$(getconf LONG_BIT).ja
 %{_javadir}/%{name}jni/%{name}jni.jar
 
 %changelog
+* Tue Aug 23 2022 wulei <wulei80@h-partners.com> - 6.8.1-4
+- Fix binary not striped problem
+
 * Thu 01 Jul 2021 sunguoshuai <sunguoshuai@huawei.com> - 6.8.1-3
 - Some jar packs should provides local in case of build error
 
