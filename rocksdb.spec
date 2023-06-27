@@ -1,6 +1,6 @@
 Name:          rocksdb
 Version:       6.8.1
-Release:       4
+Release:       5
 Summary:       A Persistent Key-Value Store for Flash and RAM Storage
  
 License:       GPLv2 and Apache 2.0 License
@@ -57,9 +57,14 @@ mkdir -p java/test-libs
 cp -p %{SOURCE1} %{SOURCE2} %{SOURCE3} java/test-libs
  
 %build
-export CFLAGS="%{optflags}"
-# librocksdb*.so* has undefined symbols dlopen and so on, “-ldl” needs to be added here
-export EXTRA_CXXFLAGS=" -std=c++11 %{optflags} -ldl"
+%if "%toolchain" == "clang"
+	export CFLAGS="%{optflags} -Wno-error=unused-but-set-variable -Wno-error=deprecated-copy -Wno-error=range-loop-construct -Wno-error=shorten-64-to-32 -Wno-error=unused-function"
+	export EXTRA_CXXFLAGS=" -std=c++11 %{optflags} -Wno-error=unused-but-set-variable -Wno-error=deprecated-copy -Wno-error=range-loop-construct -Wno-error=shorten-64-to-32 -Wno-error=unused-function"
+%else 
+	export CFLAGS="%{optflags}"
+  # librocksdb*.so* has undefined symbols dlopen and so on, “-ldl” needs to be added here
+	export EXTRA_CXXFLAGS=" -std=c++11 %{optflags} -ldl"
+%endif
 %make_build shared_lib
 # build rocksdbjni
 export JAVA_HOME=%{_jvmdir}/java-1.8.0-openjdk
@@ -99,6 +104,9 @@ install -D -m 0644 java/target/%{name}jni-%{version}-linux$(getconf LONG_BIT).ja
 %{_javadir}/%{name}jni/%{name}jni.jar
 
 %changelog
+* Tue Jun 27 2023 yoo <sunyuechi@iscas.ac.cn> - 6.8.1-5
+- fix clang build error
+
 * Tue Aug 23 2022 wulei <wulei80@h-partners.com> - 6.8.1-4
 - Fix binary not striped problem
 
