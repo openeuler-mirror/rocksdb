@@ -1,6 +1,6 @@
 Name:          rocksdb
 Version:       6.8.1
-Release:       5
+Release:       6
 Summary:       A Persistent Key-Value Store for Flash and RAM Storage
  
 License:       GPLv2 and Apache 2.0 License
@@ -22,7 +22,7 @@ Source2:       https://repo1.maven.org/maven2/cglib/cglib/2.2.2/cglib-2.2.2.jar
 Source3:       https://repo1.maven.org/maven2/org/mockito/mockito-all/1.10.19/mockito-all-1.10.19.jar
 Patch0:        rocksdb-6.8.1-install_path.patch
 Patch1:        some-jar-packs-should-provides-local.patch
- 
+Patch2:        add-riscv-support.patch 
 %description
 Rocksdb is a library that forms the core building block for a fast key value
 server, especially suited for storing data on flash drives. It has a
@@ -104,6 +104,9 @@ install -D -m 0644 java/target/%{name}jni-%{version}-linux$(getconf LONG_BIT).ja
 %{_javadir}/%{name}jni/%{name}jni.jar
 
 %changelog
+* Tue Jun 28 2023 zhangxiang <zhangxiang@iscas.ac.cn> - 6.8.1-6
+- add riscv support
+
 * Tue Jun 27 2023 yoo <sunyuechi@iscas.ac.cn> - 6.8.1-5
 - fix clang build error
 

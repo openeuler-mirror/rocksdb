@@ -1,0 +1,59 @@
+diff -ur rocksdb-6.8.1/build_tools/build_detect_platform rocksdb-6.8.1/build_tools/build_detect_platform
+--- rocksdb-6.8.1/build_tools/build_detect_platform	2020-04-17 07:01:15.000000000 +0800
++++ rocksdb-6.8.1/build_tools/build_detect_platform	2023-06-29 17:36:48.159938237 +0800
+@@ -560,6 +560,8 @@
+     COMMON_FLAGS="$COMMON_FLAGS"
+   elif test -n "`echo $TARGET_ARCHITECTURE | grep ^aarch64`"; then
+     COMMON_FLAGS="$COMMON_FLAGS"
++  elif test -n "`echo $TARGET_ARCHITECTURE | grep ^riscv64`"; then
++    COMMON_FLAGS="$COMMON_FLAGS"
+   elif [ "$TARGET_OS" == "IOS" ]; then
+     COMMON_FLAGS="$COMMON_FLAGS"
+   elif [ "$TARGET_OS" == "AIX" ] || [ "$TARGET_OS" == "SunOS" ]; then
+diff -ur rocksdb-6.8.1/java/src/main/java/org/rocksdb/util/Environment.java rocksdb-6.8.1/java/src/main/java/org/rocksdb/util/Environment.java
+--- rocksdb-6.8.1/java/src/main/java/org/rocksdb/util/Environment.java	2020-04-17 07:01:15.000000000 +0800
++++ rocksdb-6.8.1/java/src/main/java/org/rocksdb/util/Environment.java	2023-06-29 17:36:49.815940873 +0800
+@@ -22,6 +22,10 @@
+     return ARCH.contains("aarch64");
+   }
+ 
++  public static boolean isRiscv64() {
++    return ARCH.contains("riscv64");
++  }
++
+   public static boolean isPowerPC() {
+     return ARCH.contains("ppc");
+   }
+diff -ur rocksdb-6.8.1/Makefile rocksdb-6.8.1/Makefile
+--- rocksdb-6.8.1/Makefile	2020-04-17 07:01:15.000000000 +0800
++++ rocksdb-6.8.1/Makefile	2023-06-29 17:36:56.911952162 +0800
+@@ -1763,7 +1763,7 @@
+ ifeq ($(PLATFORM), OS_SOLARIS)
+ 	ARCH := $(shell isainfo -b)
+ else ifeq ($(PLATFORM), OS_OPENBSD)
+-	ifneq (,$(filter amd64 ppc64 ppc64le arm64 aarch64 sparc64, $(MACHINE)))
++	ifneq (,$(filter amd64 ppc64 ppc64le arm64 aarch64 sparc64 riscv64, $(MACHINE)))
+ 		ARCH := 64
+ 	else
+ 		ARCH := 32
+@@ -1783,7 +1783,7 @@
+   JNI_LIBC_POSTFIX = -$(JNI_LIBC)
+ endif
+ 
+-ifneq (,$(filter ppc% arm64 aarch64 sparc64, $(MACHINE)))
++ifneq (,$(filter ppc% arm64 aarch64 sparc64 riscv64, $(MACHINE)))
+ 	ROCKSDBJNILIB = librocksdbjni-linux-$(MACHINE)$(JNI_LIBC_POSTFIX).so
+ else
+ 	ROCKSDBJNILIB = librocksdbjni-linux$(ARCH)$(JNI_LIBC_POSTFIX).so
+diff -ur rocksdb-6.8.1/util/xxhash.cc rocksdb-6.8.1/util/xxhash.cc
+--- rocksdb-6.8.1/util/xxhash.cc	2020-04-17 07:01:15.000000000 +0800
++++ rocksdb-6.8.1/util/xxhash.cc	2023-06-29 17:36:53.255946345 +0800
+@@ -690,7 +690,7 @@
+ #ifndef XXH_REROLL_XXH64
+ #  if (defined(__ILP32__) || defined(_ILP32)) /* ILP32 is often defined on 32-bit GCC family */ \
+    || !(defined(__x86_64__) || defined(_M_X64) || defined(_M_AMD64) /* x86-64 */ \
+-     || defined(_M_ARM64) || defined(__aarch64__) || defined(__arm64__) /* aarch64 */ \
++     || defined(_M_ARM64) || defined(__aarch64__) || defined(__arm64__) || defined(__riscv64__)/* aarch64 */ \
+      || defined(__PPC64__) || defined(__PPC64LE__) || defined(__ppc64__) || defined(__powerpc64__) /* ppc64 */ \
+      || defined(__mips64__) || defined(__mips64)) /* mips64 */ \
+    || (!defined(SIZE_MAX) || SIZE_MAX < ULLONG_MAX) /* check limits */
